@@ -1,0 +1,8 @@
+nms_plugin:
+  score_threshold: 0.3
+  iou_threshold: 0.5
+  max_output_boxes: 100
+  background_class: -1
+  score_activation: false
+  class_agnostic: false
+  box_coding: 1
