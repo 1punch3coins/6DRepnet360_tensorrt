@@ -110,7 +110,7 @@ void SixdRepnet360::DrawPoseAxis(cv::Mat& cvmat, const Result& res, const std::v
     assert(res.angle_vec.size() == crop_vec.size());
     for (unsigned i = 0; i < res.angle_vec.size(); i++) {
         const auto& pitch = res.angle_vec[i][0];
-        const auto& yaw   = res.angle_vec[i][1];
+        const auto& yaw   = 0.0f - res.angle_vec[i][1];
         const auto& roll  = res.angle_vec[i][2];
         const int cx = crop_vec[i].l + static_cast<int>(crop_vec[i].w * 0.5f);
         const int cy = crop_vec[i].t + static_cast<int>(crop_vec[i].h * 0.5f);
