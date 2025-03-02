@@ -6,6 +6,11 @@ static void test_6drepnet(const std::string& input_path, const std::string& outp
     Yolo11Head head_model;
     SixdRepnet360 head_pose_model;
     cv::Mat ori_img = cv::imread(input_path);
+    if (ori_img.empty()) {
+        std::cerr << "could not read image from " << input_path << std::endl;
+        return;        
+    }
+
     if (head_model.Initialize(head_model_path, ori_img.rows, ori_img.cols)) {
         std::cerr << "Yolo11Head initialization uncompleted" << std::endl;
         return;
