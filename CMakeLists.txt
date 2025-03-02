@@ -3,8 +3,8 @@ set(PROJECT_NAME head_pose)
 project(${PROJECT_NAME} LANGUAGES CXX CUDA)
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/build)
-# set(CMAKE_BUILD_TYPE Release)
-set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_BUILD_TYPE Release)
+# set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_CXX_FLAGS_RELEASE "-std=c++17 -Wextra -Wall -Wno-missing-field-initializers -Wno-deprecated-declarations -O3")
 set(CMAKE_CXX_FLAGS_DEBUG   "-std=c++17 -O0 -g")
 

@@ -21,10 +21,10 @@ static constexpr std::array<const Tt, kOutputTensorNum> kOutputTypeList = {Tt::k
 // used for pre_process
 static constexpr float kMeanList[] = {0.485f, 0.456f, 0.406f};
 static constexpr float kNormList[] = {0.229f, 0.224f, 0.225f};
-static constexpr CropStyle kStyle = CropStyle::SrcCropAll_DstCoverAll;
 // used for post_process and net output meta check
 static constexpr int32_t kOutputLen = 3;
 static constexpr int32_t kOutputChannelNum = 3;
+static constexpr float kExpandRatio = 1.4f;
 // used for logger
 static constexpr const char* sIdentifier = {"6DRepnet360"};
 static constexpr int32_t kLogInfoSize = 100;
@@ -150,15 +150,44 @@ static void RotationMat2EulerAngle(const float* roat_mat_ptr, std::array<float, 
     eular_angle[2] = z*(1.0f-singular)+zs*singular; // roll
 }
 
+static void SetCropAttr(PreParam& param, const Crop& src_crop, const unsigned& img_h, const unsigned& img_w) {
+    float src_crop_cx = src_crop.l + src_crop.w * 0.5f;
+    float src_crop_cy = src_crop.t + src_crop.w * 0.5f;
+    // check at https://github.com/thohemp/6DRepNet360/blob/master/sixdrepnet360/datasets.py#L259
+    // head crop would be expanded by a ratio
+    float src_crop_ew = src_crop.w * kExpandRatio;
+    float src_crop_eh = src_crop.h * kExpandRatio;
+    float extended_l = src_crop_cx - src_crop_ew * 0.5f;
+    float extended_t = src_crop_cy - src_crop_eh * 0.5f;
+    extended_l = extended_l > 0.0f ? extended_l : 0.0f;
+    extended_t = extended_t > 0.0f ? extended_t : 0.0f;
+
+    // check at https://github.com/thohemp/6DRepNet360/blob/master/sixdrepnet360/test.py#L125
+    // the expanded face crop is first resized to (255,255) then center croped to (224,224)
+    // here we find out the range within which src crop's pixels mapped to dst crop, computation is reduced
+    param.src_crop.l = static_cast<unsigned>(extended_l + src_crop_ew * 0.0625f);
+    param.src_crop.t = static_cast<unsigned>(extended_t + src_crop_eh * 0.0625f);
+    param.src_crop.w = static_cast<unsigned>(src_crop_ew * 0.875f);
+    param.src_crop.h = static_cast<unsigned>(src_crop_eh * 0.875f);
+    if (param.src_crop.l + param.src_crop.w > img_w) {param.src_crop.w = img_w - param.src_crop.l;}
+    if (param.src_crop.t + param.src_crop.h > img_h) {param.src_crop.w = img_h - param.src_crop.t;}
+    param.dst_crop.l = 0;
+    param.dst_crop.t = 0;
+    param.dst_crop.w = 224;
+    param.dst_crop.h = 224;
+    param.scale_inv.x = src_crop_ew / 256.f;
+    param.scale_inv.y = src_crop_eh / 256.f;
+}
+
 void SixdRepnet360::Process(const cv::Mat& input_cvmat, const std::vector<Crop>& src_crops, Result& result) {
-    // 0. input check
+    // 0. input check && calc crops attr
     if (input_cvmat.rows != pre_param_.src_size.y) {LOG_ERROR(logger, sIdentifier, "mat size should be the same as setting's"); exit(1);}
     if (input_cvmat.cols != pre_param_.src_size.x) {LOG_ERROR(logger, sIdentifier, "mat size should be the same as setting's"); exit(1);}
     if (pre_param_.src_step != input_cvmat.step[0] / input_cvmat.step[1]) {LOG_ERROR(logger, sIdentifier, "mat step should be the same as setting's"); exit(1);}
     const unsigned& cur_batch_size = src_crops.size();
     std::vector<PreParam> pre_param_vec(src_crops.size(), pre_param_);
     for (unsigned i = 0; i < src_crops.size(); i++) {
-        imgpcs_kernel_->set_dst_crop_attr(pre_param_vec[i], src_crops[i], pre_param_.dst_size.x, pre_param_.dst_size.y, kStyle);
+        SetCropAttr(pre_param_vec[i], src_crops[i], input_cvmat.rows, input_cvmat.cols);
     }
     const auto& t_pre_process0 = std::chrono::steady_clock::now();
 
