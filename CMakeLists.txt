@@ -9,8 +9,9 @@ set(CMAKE_CXX_FLAGS_RELEASE "-std=c++17 -Wextra -Wall -Wno-missing-field-initial
 set(CMAKE_CXX_FLAGS_DEBUG   "-std=c++17 -O0 -g")
 
 set(DEMO0_NAME head_det)
-set(DEMO1_NAME head_pose_est)
-set(DEMO2_NAME head_pose_est_video)
+set(DEMO1_NAME head_det_video)
+set(DEMO2_NAME head_pose_est)
+set(DEMO3_NAME head_pose_est_video)
 
 set(DEVICE_ARCH     "75" CACHE STRING "The device's compute arch to build and run plugin")
 set(IS_INPUT_RGB     true CACHE BOOL "The algo's model's input is of rgb or bgr")
@@ -66,8 +67,9 @@ set_target_properties(trtrun_core PROPERTIES CUDA_ARCHITECTURES ${DEVICE_ARCH}) 
 ######################## target demos #########################
 message("-- Use enqueuV3: "${USE_ENQUEUEV3})
 add_executable(${DEMO0_NAME} ${ALGO_SRC_FILES} src/demos/head_det.cpp)
-add_executable(${DEMO1_NAME} ${ALGO_SRC_FILES} src/demos/pose_est.cpp)
-add_executable(${DEMO2_NAME} ${ALGO_SRC_FILES} src/demos/pose_est_video.cpp)
+add_executable(${DEMO1_NAME} ${ALGO_SRC_FILES} src/demos/head_det_video.cpp)
+add_executable(${DEMO2_NAME} ${ALGO_SRC_FILES} src/demos/pose_est.cpp)
+add_executable(${DEMO3_NAME} ${ALGO_SRC_FILES} src/demos/pose_est_video.cpp)
 
 function(decorator target_name)
     target_compile_definitions(${target_name} PUBLIC USE_ENQUEUEV3)
@@ -79,5 +81,6 @@ endfunction()
 decorator(${DEMO0_NAME})
 decorator(${DEMO1_NAME})
 decorator(${DEMO2_NAME})
+decorator(${DEMO3_NAME})
 
 

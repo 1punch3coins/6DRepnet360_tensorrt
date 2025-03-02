@@ -38,7 +38,13 @@ static void test_6drepnet(const std::string& input_path, const std::string& outp
 }
 
 static void help() {
-
+    printf(
+        "./head_pose_est [arg0] [arg1] [optional arg2] [optional arg3]\n"
+        "arg0: the path of input image\n"
+        "arg1: the path of otuput image\n"
+        "optional arg2: the path of yolo11 head detection tensorrt model\n"
+        "optional arg3: the path of 6DRepNet360 tensorrt model\n"
+    );
     exit(1);
 }
 

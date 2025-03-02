@@ -22,7 +22,12 @@ static void test_yolo11_head(const std::string& input_path, const std::string& o
 }
 
 static void help() {
-
+    printf(
+        "./head_det [arg0] [arg1] [optional arg2]\n"
+        "arg0: the path of input image\n"
+        "arg1: the path of otuput image\n"
+        "optional arg2: the path of yolo11 head detection tensorrt model\n"
+    );
     exit(1);
 }
 

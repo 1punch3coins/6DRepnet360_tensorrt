@@ -6,12 +6,23 @@ static void test_6drepnet(const std::string& input_path, const std::string& outp
     Yolo11Head head_model;
     SixdRepnet360 head_pose_model;
     cv::VideoCapture cap(input_path);
+    int frame_height = cap.get(cv::CAP_PROP_FRAME_HEIGHT);
+    int frame_width = cap.get(cv::CAP_PROP_FRAME_WIDTH);
+    int fps = cap.get(cv::CAP_PROP_FPS);
+    cv::VideoWriter writer(output_path, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), fps, cv::Size(frame_width, frame_height));
     
-    if (head_model.Initialize(head_model_path, cap.get(cv::CAP_PROP_FRAME_HEIGHT), cap.get(cv::CAP_PROP_FRAME_WIDTH))) {
+    if (!cap.isOpened()) {
+        std::cout << "could not find or open the video at " << input_path << std::endl;
+    }
+    if (!writer.isOpened()) {
+        std::cout << "could not open the video writer at " << output_path << std::endl;
+    }
+
+    if (head_model.Initialize(head_model_path, frame_height, frame_width)) {
         std::cerr << "Yolo11Head initialization uncompleted" << std::endl;
         return;
     }
-    if (head_pose_model.Initialize(pose_model_path, cap.get(cv::CAP_PROP_FRAME_HEIGHT), cap.get(cv::CAP_PROP_FRAME_WIDTH))) {
+    if (head_pose_model.Initialize(pose_model_path, frame_height, frame_width)) {
         std::cerr << "6DRepNet360 initialization uncompleted" << std::endl;
         return;
     }
@@ -33,17 +44,33 @@ static void test_6drepnet(const std::string& input_path, const std::string& outp
             cv::rectangle(frame, cv::Rect(box.x, box.y, box.w, box.h), cv::Scalar(0, 255, 0), 2);
         }
         head_pose_model.DrawPoseAxis(frame, pose_res, head_crops);
+
         cv::imshow("result", frame);
-        if (cv::waitKey(30) == 27) {
+        auto t0 = std::chrono::steady_clock::now();
+        writer.write(frame);
+        auto t1 = std::chrono::steady_clock::now();
+        float wait_time = (1000.0f/fps-(det_res.process_time+pose_res.process_time+(t1-t0).count()*1e-6f));
+        wait_time = wait_time < 0.0f ? 1.0f : wait_time;
+        if (cv::waitKey(wait_time) == 27) {
+            cap.release();
+            writer.release();
             break;
         }
     }
+    cap.release();
+    writer.release();
     head_model.Finalize();
     head_pose_model.Finalize();
 }
 
 static void help() {
-
+    printf(
+        "./head_pose_est_video [arg0] [arg1] [optional arg2] [optional arg3]\n"
+        "arg0: the path of input video\n"
+        "arg1: the path of otuput video\n"
+        "optional arg2: the path of yolo11 head detection tensorrt model\n"
+        "optional arg3: the path of 6DRepNet360 tensorrt model\n"
+    );
     exit(1);
 }
 
