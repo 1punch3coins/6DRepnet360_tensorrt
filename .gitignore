@@ -1,5 +1,6 @@
 .vscode
 build
-asset
+asset/input
+asset/output
 model
 todo.txt
