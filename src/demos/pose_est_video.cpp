@@ -9,13 +9,15 @@ static void test_6drepnet(const std::string& input_path, const std::string& outp
     int frame_height = cap.get(cv::CAP_PROP_FRAME_HEIGHT);
     int frame_width = cap.get(cv::CAP_PROP_FRAME_WIDTH);
     int fps = cap.get(cv::CAP_PROP_FPS);
-    cv::VideoWriter writer(output_path, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), fps, cv::Size(frame_width, frame_height));
+    cv::VideoWriter writer(output_path, cv::VideoWriter::fourcc('H', '2', '6', '4'), fps, cv::Size(frame_width, frame_height));
     
     if (!cap.isOpened()) {
-        std::cout << "could not find or open the video at " << input_path << std::endl;
+        std::cerr << "could not find or open the video at " << input_path << std::endl;
+        return;
     }
     if (!writer.isOpened()) {
-        std::cout << "could not open the video writer at " << output_path << std::endl;
+        std::cerr << "could not open the video writer at " << output_path << std::endl;
+        return;
     }
 
     if (head_model.Initialize(head_model_path, frame_height, frame_width)) {
