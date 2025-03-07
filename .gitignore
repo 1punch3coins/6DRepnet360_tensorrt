@@ -2,5 +2,5 @@
 build
 asset/input
 asset/output
-model
+model/*.plan
 todo.txt
