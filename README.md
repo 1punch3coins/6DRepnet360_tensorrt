@@ -12,27 +12,27 @@ The project runs in a two-stage manner. A head detector trained with yolo11 is u
 
 
 ## Prepare models
+Clone the repo.
+```bash
+git clone 
+```
+You need to make sure cuda and tenssort is properly installed under your Ubuntu os.  
+```bash
+dpkg -l | grep cuda
+dpkg -l | grep tensorrt
+```
 The repo uploads a trained yolo11n head detection onnx file and a 6DRepNet360 head pose estimation onnx file under model folder. You could directly export them into .trt files using the following script:
 ```
 bash tool/onnx2trt.sh
 ```
 After seconds to minutes waiting, the two exported plan files and logs would be under the model folder too.
 ## Compile Codes
-You need to make sure cuda and tenssort is properly installed under your Ubuntu os.  
-```bash
-dpkg -l | grep cuda
-dpkg -l | grep tensorrt
-```
-Clone the repo.
-```bash
-git clone 
-```
 Before compliation, you need to check your gpu's compute capacity [here](https://developer.nvidia.com/cuda-gpus), and build the codes as following.
 ```bash
 cd 6DRepNet360-Tensorrt && mkdir build && cd build
-cmake../ -DDEVICE_ARCH=/your/device/capacity && make -j
+cmake ../ -DDEVICE_ARCH=/your/device/capacity && make -j
 ```
-The repo would choose tensorrt's enqueue versions automatically to compile according to your tensorrt versions. If your trt version is newer than 8.5, enqueueV3() and auxiliary apis would be used, otherwise, enqueueV2() is used.  
+The repo would choose tensorrt's enqueue versions automatically to compile according to your tensorrt versions. If your trt version is newer than 10.0, enqueueV3() and auxiliary apis would be used, otherwise, enqueueV2() is used.  
 ## Usage
 To run a 6DRepNet360 head pose estimation with a single image, run:
 ```bash
