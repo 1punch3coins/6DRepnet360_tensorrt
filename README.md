@@ -1,5 +1,5 @@
 # 6DRepNet360_Tensorrt
-This project is for head pose estimation. It uses a tensorrt-based implemntation of 6DRepNet360 in c++ environment.
+This project is for head pose estimation. It uses a tensorrt-based implemntation of [6DRepNet360](https://github.com/thohemp/6DRepNet360/blob/master/README.MD) in c++ environment.
 <p align="center">
   <img src="asset/boy_in_a_mirror.gif" width="640" />
 </p>
@@ -45,6 +45,6 @@ cd build && ./head_pose_est_video /path/to/input_video /path/to/output_video
 ## License
 The repo is under MIT license.
 ## References
-🔗 [6DRepNet360](https://github.com/thohemp/6DRepNet360/blob/master/README.MD)
-🔗 [Yolo11](https://github.com/ultralytics/ultralytics.git)
-🔗 [PINTO](https://github.com/PINTO0309/PINTO_model_zoo/tree/main/423_6DRepNet360)
+🔗 [6DRepNet360 official repo](https://github.com/thohemp/6DRepNet360/blob/master/README.MD)
+🔗 [Yolo11 official repo](https://github.com/ultralytics/ultralytics.git)
+🔗 [An awesome 6DRepNet360 implementation in onnx-runtime python](https://github.com/PINTO0309/PINTO_model_zoo/tree/main/423_6DRepNet360)
