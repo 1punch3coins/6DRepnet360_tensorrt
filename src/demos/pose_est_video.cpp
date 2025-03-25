@@ -39,13 +39,14 @@ static void test_6drepnet(const std::string& input_path, const std::string& outp
         for (const auto& box: det_res.bbox_vec) {
             head_crops.emplace_back(box.x, box.y, box.w, box.h);
         }
-        head_pose_model.Process(frame, head_crops, pose_res);
-
-        for (const auto& box: det_res.bbox_vec) {
-            cv::putText(frame, std::to_string(box.conf).substr(0,4), cv::Point(box.x, box.y - 6), 0, 0.8, cv::Scalar(0, 255, 0), 2);
-            cv::rectangle(frame, cv::Rect(box.x, box.y, box.w, box.h), cv::Scalar(0, 255, 0), 2);
+        if (head_crops.size() > 0) {
+            head_pose_model.Process(frame, head_crops, pose_res);
+            for (const auto& box: det_res.bbox_vec) {
+                cv::putText(frame, std::to_string(box.conf).substr(0,4), cv::Point(box.x, box.y - 6), 0, 0.8, cv::Scalar(0, 255, 0), 2);
+                cv::rectangle(frame, cv::Rect(box.x, box.y, box.w, box.h), cv::Scalar(0, 255, 0), 2);
+            }
+            head_pose_model.DrawPoseAxis(frame, pose_res, head_crops);
         }
-        head_pose_model.DrawPoseAxis(frame, pose_res, head_crops);
 
         cv::imshow("result", frame);
         auto t0 = std::chrono::steady_clock::now();
