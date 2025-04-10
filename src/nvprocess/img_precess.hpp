@@ -1,6 +1,7 @@
 #pragma once
 #include <opencv2/opencv.hpp>
 #include <vector_types.h>
+#include "ex_marcos.h"
 
 enum class CropStyle: int32_t{
     SrcCropAll_DstCoverAll     = 0,
@@ -21,7 +22,7 @@ struct Crop{
     {}
 };
 
-struct PreParam{
+struct API PreParam{
     Crop src_crop;
     Crop dst_crop;
     int2 src_size;
@@ -33,7 +34,7 @@ struct PreParam{
     float3 norm_inv;
 };
 
-class ImgPrecess {
+class API ImgPrecess {
 public:
     ImgPrecess()
     {}

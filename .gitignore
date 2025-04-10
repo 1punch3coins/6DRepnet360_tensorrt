@@ -3,4 +3,5 @@ build
 asset/input
 asset/output
 model/*.plan
+model/*.log
 todo.txt

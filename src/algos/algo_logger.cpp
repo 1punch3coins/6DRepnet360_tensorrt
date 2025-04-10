@@ -1,20 +1,26 @@
 #include "algo_logger.hpp"
+#include <sstream>
 
 namespace algoLogger{
     void update_os_str(std::string& os_str) {
         std::time_t timestamp = std::time(nullptr);
-        tm* tm_local = std::localtime(&timestamp);
-        auto* p_std_out = std::cout.rdbuf();
-        std::stringbuf buf;
-        std::cout.rdbuf(&buf);
-        std::cout << "[";
-        std::cout << std::setw(2) << std::setfill('0') << 1 + tm_local->tm_mon << "/";
-        std::cout << std::setw(2) << std::setfill('0') << tm_local->tm_mday << "/";
-        std::cout << std::setw(4) << std::setfill('0') << 1900 + tm_local->tm_year << "-";
-        std::cout << std::setw(2) << std::setfill('0') << tm_local->tm_hour << ":";
-        std::cout << std::setw(2) << std::setfill('0') << tm_local->tm_min << ":";
-        std::cout << std::setw(2) << std::setfill('0') << tm_local->tm_sec << "] ";
-        std::cout.rdbuf(p_std_out);
+        tm tm_local;
+    
+        // Use localtime_s for MSVC and localtime_r for POSIX compatibility
+    #ifdef _MSC_VER
+        localtime_s(&tm_local, &timestamp);
+    #else
+        localtime_r(&timestamp, &tm_local);
+    #endif
+
+        std::ostringstream buf;
+        buf << "[" 
+            << std::setw(2) << std::setfill('0') << 1 + tm_local.tm_mon << "/"
+            << std::setw(2) << std::setfill('0') << tm_local.tm_mday << "/"
+            << std::setw(4) << std::setfill('0') << 1900 + tm_local.tm_year << "-"
+            << std::setw(2) << std::setfill('0') << tm_local.tm_hour << ":"
+            << std::setw(2) << std::setfill('0') << tm_local.tm_min << ":"
+            << std::setw(2) << std::setfill('0') << tm_local.tm_sec << "] ";
         os_str = buf.str();
     }
     const char* get_severity_str(const Severity& severity) {

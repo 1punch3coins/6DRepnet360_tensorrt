@@ -7,8 +7,9 @@
 
 #include <NvInfer.h>
 #include "cu_marcos.h"
+#include "ex_marcos.h"
 
-class NetMeta {
+class API NetMeta {
 public:
     enum class TensorType: int32_t {   // consistent with nvinfer1::DataType; use "enum class" to avoid naming conflict
         kTypeFloat32 = 0,
@@ -72,7 +73,7 @@ public:
     }
 };
 
-class TrtRunner {
+class API TrtRunner {
 public:
     static TrtRunner* Create();    // keyword static allowes it could be accessed via class name
     int32_t InitEngine(const std::string& model_pwd);
